@@ -1,7 +1,40 @@
+use std::{fmt, process};
 use std::process::{Command, ExitStatus};
 use std::str::FromStr;
 use std::error;
 use std::io::{stdout, stdin, Write};
+
+#[derive(Debug)]
+enum Menu {
+    Wordgame,
+    Prank,
+    Quit
+}
+
+impl fmt::Display for Menu {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {        
+        match self {
+            Menu::Wordgame => write!(f, "1. Wordgame"),
+            Menu::Prank => write!(f, "2. Prank"),
+            Menu::Quit => write!(f, "3. Quit"),
+        }
+    }
+}
+
+impl Menu {
+    fn play() -> () {
+        println!("Play!")
+    }
+
+    fn prank() -> () {
+        println!("Prank")
+    }
+
+    fn quit() -> () {
+        println!("Goodbye!!!");
+        process::exit(0)
+    }
+}
 
 #[derive(Debug)]
 struct Wordgame;
@@ -16,20 +49,29 @@ impl Wordgame {
 
     fn new() -> Result<(), Box<dyn error::Error>> {
         Wordgame::clear();
-
-        let _ = stdout().write_all(b"Determine your word game board-size.\n");
+        let _ = stdout().write_all(b"Determine an option for Reddy Wordgame:\n");
         let mut input = String::new();
+        
         stdout().lock().flush()?;
-
+        Wordgame::print_menu();
         stdin().read_line(&mut input)?;
-        let x = Field::parse(&input);
-        input.clear();
 
-        stdin().read_line(&mut input)?;
-        let y = Field::parse(&input);
-        Field::new(x, y);
-
+        let option = Field::parse(&input);
+        Wordgame::menu(option);
         Ok(())
+    }
+
+    fn print_menu() -> () {
+        println!("{}\n{}\n{}", Menu::Wordgame, Menu::Prank, Menu::Quit)
+    }
+
+    fn menu(option: u8) -> () {
+        match option {
+            1 => Menu::play(),
+            2 => Menu::prank(),
+            3 => Menu::quit(),
+            _ => panic!("Invalid option chosen..."),
+        }
     }
 }
 
@@ -48,16 +90,6 @@ impl Field {
         match u8::from_str(&input) {
             Ok(num) => num,
             Err(_) => 0,
-        }
-    }
-
-    fn new(x: u8, y: u8) -> () {
-        let mut vec: Vec<Vec<u8>> = vec![vec![1; y.into()]; x.into()];
-
-        for x in vec.iter_mut() {
-            for y in x.iter() {
-                println!("The field to print: {:?}{}", x, y)
-            }
         }
     }
 }
