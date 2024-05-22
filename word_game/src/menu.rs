@@ -1,15 +1,15 @@
 use std::{fmt, process};
-use std::process::{Command, ExitStatus};
 use std::io::{stdout, stdin, Write};
-use crate::field::Field;
+use webbrowser;
+
 use crate::game::Wordgame;
+use crate::parse::Parse;
 
 #[derive(Debug)]
 pub enum Menu {
     Wordgame,
     Prank,
     Quit,
-    Back,
 }
 
 impl fmt::Display for Menu {
@@ -18,46 +18,55 @@ impl fmt::Display for Menu {
             Menu::Wordgame => write!(f, "1. Wordgame"),
             Menu::Prank => write!(f, "2. Prank"),
             Menu::Quit => write!(f, "3. Quit"),
-            Menu::Back => write!(f, "2. Back"),
         }
     }
 }
 
 impl Menu {
-    pub fn clear() -> ExitStatus {
-        Command::new("cmd")
-            .args(&["/c", "cls"])
-            .status()
-            .unwrap()
+    pub fn print() {
+        println!("{}\n{}\n{}", Menu::Wordgame, Menu::Prank, Menu::Quit)
     }
 
-    pub fn prank() -> () {
-        println!("Prank")
+    pub fn menu(option: u8, input: String) {
+        match option {
+            1 => Menu::play(),
+            2 => Menu::prank(),
+            3 => Menu::quit(),
+            _ => Menu::default(input),
+        }
     }
 
-    pub fn quit() -> () {
+    fn play() {
+        Wordgame::clear();
+        println!("You won!!!");
+
+        let input = String::new();
+        Menu::repeat(input);
+    }
+
+    fn prank() {
+        println!("Hehehehehe");
+        webbrowser::open("https://www.youtube.com/watch?v=cvh0nX08nRw").unwrap();
+    }
+
+    fn quit() {
         println!("Goodbye!!!");
         process::exit(0)
     }
 
-    pub fn new() -> () {
-        println!("{}\n{}\n{}", Menu::Wordgame, Menu::Prank, Menu::Quit)
+    fn default(mut input: String) {
+        input.clear();
+        Wordgame::clear();
+        Menu::repeat(input);
     }
 
-    pub fn back() -> () {
-        Menu::clear();
-        let _ = stdout().write_all(b"Determine an option:\n");
-        let mut input = String::new();
-
+    fn repeat(mut input: String) {
         stdout().lock().flush().unwrap();
-        Menu::new();
+        let _ = stdout().write_all(b"Determine an option for Reddy Wordgame:\n");
+        Menu::print();
+
         stdin().read_line(&mut input).unwrap();
-
-        let option = Field::parse(&input);
-        Wordgame::menu(option, input);
-    }
-
-    pub fn won() -> () {
-        println!("{}\n{}\n{}", Menu::Wordgame, Menu::Back, Menu::Quit)
+        let option = Parse::parse(&input);
+        Menu::menu(option, input);
     }
 }
