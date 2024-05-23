@@ -4,7 +4,7 @@ use std::str::FromStr;
 pub struct Parse;
 
 impl Parse {
-    pub fn parse(s: &str) -> u8 {
+    pub fn new(s: &str) -> u8 {
         let from_u8 = s.trim()
             .parse::<u8>()
             .map_err(|_| format!("Error while trying to parse to u8."))

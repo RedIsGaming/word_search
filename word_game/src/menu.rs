@@ -1,6 +1,5 @@
-use std::{fmt, process};
-use std::io::{stdout, stdin, Write};
-use webbrowser;
+use std::fmt;
+use std::io::stdin;
 
 use crate::game::Wordgame;
 use crate::parse::Parse;
@@ -23,50 +22,24 @@ impl fmt::Display for Menu {
 }
 
 impl Menu {
-    pub fn print() {
-        println!("{}\n{}\n{}", Menu::Wordgame, Menu::Prank, Menu::Quit)
-    }
-
-    pub fn menu(option: u8, input: String) {
+    pub fn new(option: u8, mut input: String) {
         match option {
-            1 => Menu::play(),
-            2 => Menu::prank(),
-            3 => Menu::quit(),
-            _ => Menu::default(input),
+            1 => Wordgame::play(),
+            2 => Wordgame::prank(),
+            3 => Wordgame::quit(),
+            _ => {
+                input.clear();
+                Wordgame::reset_option();
+                Menu::print();
+
+                stdin().read_line(&mut input).unwrap();
+                let option = Parse::new(&input);
+                Menu::new(option, input);
+            },
         }
     }
 
-    fn play() {
-        Wordgame::clear();
-        println!("You won!!!");
-
-        let input = String::new();
-        Menu::repeat(input);
-    }
-
-    fn prank() {
-        println!("Hehehehehe");
-        webbrowser::open("https://www.youtube.com/watch?v=cvh0nX08nRw").unwrap();
-    }
-
-    fn quit() {
-        println!("Goodbye!!!");
-        process::exit(0)
-    }
-
-    fn default(mut input: String) {
-        input.clear();
-        Wordgame::clear();
-        Menu::repeat(input);
-    }
-
-    fn repeat(mut input: String) {
-        stdout().lock().flush().unwrap();
-        let _ = stdout().write_all(b"Determine an option for Reddy Wordgame:\n");
-        Menu::print();
-
-        stdin().read_line(&mut input).unwrap();
-        let option = Parse::parse(&input);
-        Menu::menu(option, input);
+    pub fn print() {
+        println!("{}\n{}\n{}", Menu::Wordgame, Menu::Prank, Menu::Quit)
     }
 }
