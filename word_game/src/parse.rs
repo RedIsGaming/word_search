@@ -1,20 +1,13 @@
-use std::str::FromStr;
+use std::num::ParseIntError;
 
 #[derive(Debug)]
 pub struct Parse;
 
 impl Parse {
-    pub fn new(s: &str) -> u8 {
-        let from_u8 = s.trim()
-            .parse::<u8>()
-            .map_err(|_| format!("Error while trying to parse to u8."))
-            .expect("Expected a valid whole number between 0-255");
-
-        let input = from_u8.to_string();
-
-        match u8::from_str(&input) {
-            Ok(num) => num,
-            Err(_) => 0,
+    pub fn new(s: &str) -> Result<u8, ParseIntError> {
+        match s.trim().parse::<u8>().map_err(|e| e) {
+            Ok(num) => Ok(num),
+            Err(err) => return Err(err),
         }
     }
 }

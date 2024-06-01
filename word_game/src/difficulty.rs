@@ -1,9 +1,9 @@
 use std::fmt;
-use std::io::stdin;
-use std::sync::Arc;
+use std::io::{stdin, stdout, Write};
 
 use crate::game::Wordgame;
 use crate::parse::Parse;
+use crate::field::Field;
 
 #[derive(Debug)]
 pub enum Difficulty {
@@ -25,16 +25,16 @@ impl fmt::Display for Difficulty {
 impl Difficulty {
     pub fn new(option: u8, mut input: String) {
         match option {
-            1 => Difficulty::field(input),
-            2 => Difficulty::field(input),
-            3 => Difficulty::field(input),
+            1 => Field::new(input),
+            2 => Field::new(input),
+            3 => Field::new(input),
             _ => {
-                input.clear();
-                Wordgame::reset_option();
+                Wordgame::reset_option(&mut input);
                 Difficulty::print();
+                stdout().write_all(b"Enter a whole number between 0-255!\n").unwrap();
 
                 stdin().read_line(&mut input).unwrap();
-                let option = Parse::new(&input);
+                let option = Parse::new(&input).expect("Expected a whole number between 0-255");
                 Difficulty::new(option, input);
             },
         }
@@ -42,14 +42,5 @@ impl Difficulty {
 
     pub fn print() {
         println!("{}\n{}\n{}", Difficulty::Small, Difficulty::Normal, Difficulty::Large)
-    }
-
-    fn field(input: String) {
-        let size = Parse::new(&input);
-        let arc: Arc<Vec<Vec<u8>>> = Arc::new(vec![vec![1; (size * 6).into()]; (size * 6).into()].into());
-
-        arc.iter().for_each(|vec| {
-            println!("{:?}", vec);
-        })
     }
 }
