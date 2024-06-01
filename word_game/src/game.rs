@@ -19,8 +19,8 @@ impl Wordgame {
         Menu::print();
 
         stdin().read_line(&mut input)?;
-        let option = Parse::new(&input)?;
-        Menu::new(option, input);
+        let option = Parse::new::<u8>(&input)?;
+        Menu::new(option.into(), input);
         
         Ok(())
     }
@@ -40,8 +40,8 @@ impl Wordgame {
         Difficulty::print();
 
         stdin().read_line(&mut new_input).unwrap();
-        let option = Parse::new(&new_input).unwrap();
-        Difficulty::new(option, new_input);
+        let option = Parse::new::<u8>(&new_input).expect("Expected a whole number between 0-255");
+        Difficulty::new(option.into(), new_input);
     }
 
     pub fn prank() {

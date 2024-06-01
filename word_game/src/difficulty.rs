@@ -23,7 +23,7 @@ impl fmt::Display for Difficulty {
 }
 
 impl Difficulty {
-    pub fn new(option: u8, mut input: String) {
+    pub fn new(option: usize, mut input: String) {
         match option {
             1 => Field::new(input),
             2 => Field::new(input),
@@ -34,8 +34,8 @@ impl Difficulty {
                 stdout().write_all(b"Enter a whole number between 0-255!\n").unwrap();
 
                 stdin().read_line(&mut input).unwrap();
-                let option = Parse::new(&input).expect("Expected a whole number between 0-255");
-                Difficulty::new(option, input);
+                let option = Parse::new::<u8>(&input).expect("Expected a whole number between 0-255");
+                Difficulty::new(option.into(), input);
             },
         }
     }

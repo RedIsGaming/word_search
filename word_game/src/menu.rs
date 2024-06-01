@@ -22,7 +22,7 @@ impl fmt::Display for Menu {
 }
 
 impl Menu {
-    pub fn new(option: u8, mut input: String) {
+    pub fn new(option: usize, mut input: String) {
         match option {
             1 => Wordgame::play(input),
             2 => Wordgame::prank(),
@@ -33,8 +33,8 @@ impl Menu {
                 stdout().write_all(b"Enter a whole number between 0-255!\n").unwrap();
 
                 stdin().read_line(&mut input).unwrap();
-                let option = Parse::new(&input).expect("Expected a whole number between 0-255");
-                Menu::new(option, input);
+                let option = Parse::new::<u8>(&input).expect("Expected a whole number between 0-255");
+                Menu::new(option.into(), input);
             },
         }
     }
