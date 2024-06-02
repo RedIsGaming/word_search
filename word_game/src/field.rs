@@ -1,15 +1,14 @@
 use std::sync::Arc;
 
-use crate::file::WordFile;
+use crate::puzzle::PuzzleFile;
 use crate::parse::Parse;
 
 #[derive(Debug)]
 pub struct Field;
 
 impl Field {
-    #[allow(unused)]
-    pub fn new(input: String) {
-        let size = Parse::new::<u8>(&input).unwrap();
+    pub fn create(input: String) {
+        let size = Parse::convert::<u8>(&input).unwrap_or_default();
 
         let arc: Arc<Vec<Vec<&str>>> = Arc::new(vec![
             vec![
@@ -23,14 +22,6 @@ impl Field {
             println!("{:?}", vec);
         });
 
-        WordFile::read()
+        PuzzleFile::read()
     }
-
-    // fn board() -> Vec<&'static str> {
-    //     let words: Vec<&str> = vec!["Casual", "Potato", "Pear", "Happy", "Great", "Tidy"];
-        
-    //     words.iter()
-    //         .cloned()
-    //         .collect::<Vec<&str>>()
-    // }
 }

@@ -1,14 +1,13 @@
-use std::num::ParseIntError;
-use std::str::FromStr;
+use std::{num::ParseIntError, str::FromStr};
 
 #[derive(Debug)]
 pub struct Parse;
 
 impl Parse {
-    pub fn new<T: FromStr<Err = ParseIntError>>(s: &str) -> Result<T, ParseIntError> {
-        match s.trim().parse::<T>().map_err(|e| e) {
+    pub fn convert<T: FromStr<Err = ParseIntError>>(s: &str) -> Result<T, ParseIntError> {
+        match s.trim().parse::<T>() {
             Ok(num) => Ok(num),
-            Err(err) => return Err(err),
+            Err(err) => Err(err),
         }
     }
 }

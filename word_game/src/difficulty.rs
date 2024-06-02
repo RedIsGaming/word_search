@@ -1,5 +1,4 @@
-use std::fmt;
-use std::io::{stdin, stdout, Write};
+use std::{fmt, io::{stdin, stdout, Write}};
 
 use crate::game::Wordgame;
 use crate::parse::Parse;
@@ -23,19 +22,19 @@ impl fmt::Display for Difficulty {
 }
 
 impl Difficulty {
-    pub fn new(option: usize, mut input: String) {
+    pub fn select(option: usize, mut input: String) {
         match option {
-            1 => Field::new(input),
-            2 => Field::new(input),
-            3 => Field::new(input),
+            1 => Field::create(input),
+            2 => Field::create(input),
+            3 => Field::create(input),
             _ => {
                 Wordgame::reset_option(&mut input);
                 Difficulty::print();
-                stdout().write_all(b"Enter a whole number between 0-255!\n").unwrap();
+                stdout().write_all(b"Enter a whole number between 0-255!\n").ok();
 
-                stdin().read_line(&mut input).unwrap();
-                let option = Parse::new::<u8>(&input).expect("Expected a whole number between 0-255");
-                Difficulty::new(option.into(), input);
+                stdin().read_line(&mut input).ok();
+                let option = Parse::convert::<u8>(&input).unwrap_or_default();
+                Difficulty::select(option.into(), input);
             },
         }
     }

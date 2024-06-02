@@ -1,5 +1,4 @@
-use std::fmt;
-use std::io::{stdin, stdout, Write};
+use std::{fmt, io::{stdin, stdout, Write}};
 
 use crate::game::Wordgame;
 use crate::parse::Parse;
@@ -22,7 +21,7 @@ impl fmt::Display for Menu {
 }
 
 impl Menu {
-    pub fn new(option: usize, mut input: String) {
+    pub fn create(option: usize, mut input: String) {
         match option {
             1 => Wordgame::play(input),
             2 => Wordgame::prank(),
@@ -30,11 +29,11 @@ impl Menu {
             _ => {
                 Wordgame::reset_option(&mut input);
                 Menu::print();
-                stdout().write_all(b"Enter a whole number between 0-255!\n").unwrap();
+                stdout().write_all(b"Enter a whole number between 0-255!\n").ok();
 
-                stdin().read_line(&mut input).unwrap();
-                let option = Parse::new::<u8>(&input).expect("Expected a whole number between 0-255");
-                Menu::new(option.into(), input);
+                stdin().read_line(&mut input).ok();
+                let option = Parse::convert::<u8>(&input).unwrap_or_default();
+                Menu::create(option.into(), input);
             },
         }
     }

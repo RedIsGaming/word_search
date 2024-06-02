@@ -1,6 +1,4 @@
-use std::{error, process};
-use std::io::{stdout, stdin, Write};
-use std::process::{Command, ExitStatus};
+use std::{error, process, process::*, io::{stdout, stdin, Write}};
 use webbrowser;
 
 use crate::difficulty::Difficulty;
@@ -11,7 +9,7 @@ use crate::parse::Parse;
 pub struct Wordgame;
 
 impl Wordgame {
-    pub fn new() -> Result<(), Box<dyn error::Error>> {
+    pub fn build() -> Result<(), Box<dyn error::Error>> {
         Wordgame::clear();
         
         let mut input = String::new();
@@ -19,17 +17,17 @@ impl Wordgame {
         Menu::print();
 
         stdin().read_line(&mut input)?;
-        let option = Parse::new::<u8>(&input)?;
-        Menu::new(option.into(), input);
+        let option = Parse::convert::<u8>(&input).unwrap_or_default();
+        Menu::create(option.into(), input);
         
         Ok(())
     }
 
-    pub fn clear() -> ExitStatus {
+    pub fn clear() -> Option<ExitStatus> {
         Command::new("cmd")
-            .args(&["/c", "cls"])
+            .args(["/c", "cls"])
             .status()
-            .unwrap()
+            .ok()
     }
 
     pub fn play(mut old_input: String) {
@@ -39,13 +37,13 @@ impl Wordgame {
         let mut new_input = String::new();
         Difficulty::print();
 
-        stdin().read_line(&mut new_input).unwrap();
-        let option = Parse::new::<u8>(&new_input).expect("Expected a whole number between 0-255");
-        Difficulty::new(option.into(), new_input);
+        stdin().read_line(&mut new_input).ok();
+        let option = Parse::convert::<u8>(&new_input).unwrap_or_default();
+        Difficulty::select(option.into(), new_input);
     }
 
     pub fn prank() {
-        webbrowser::open("https://www.youtube.com/watch?v=cvh0nX08nRw").unwrap();
+        webbrowser::open("https://www.youtube.com/watch?v=cvh0nX08nRw").ok();
     }
 
     pub fn quit() {
@@ -55,7 +53,7 @@ impl Wordgame {
     pub fn reset_option(input: &mut String) {
         input.clear();
         Wordgame::clear();
-        stdout().write_all(b"Determine an option for Reddy Wordgame:\n").unwrap();
-        stdout().lock().flush().unwrap();
+        stdout().write_all(b"Determine an option for Reddy Wordgame:\n").ok();
+        stdout().lock().flush().ok();
     }
 }
