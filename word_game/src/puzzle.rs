@@ -26,7 +26,7 @@ impl Hash for Puzzle {
 }
 
 impl Puzzle {
-    pub fn new(width: u8, height: u8) -> Self {
+    fn new(width: u8, height: u8) -> Self {
         Self { 
             width, 
             height, 
@@ -34,27 +34,24 @@ impl Puzzle {
         }
     }
 
-    pub fn create(words: String) {
+    fn create(words: String) {
         let puzzle = Puzzle::new(5, 5);
-        let replace = Puzzle::replace(words);
-        Puzzle::insert(puzzle, replace)
+        let vec = Puzzle::iter(words);
+        Puzzle::insert(puzzle, vec)
     }
 
-    fn replace(words: String) -> Vec<String> {
+    fn iter(words: String) -> Vec<String> {
         words.lines()
             .map(|line| line.to_string())
+            .filter(|word| !word.contains('-') && !word.contains("()"))
             .collect()
     }
 
-    fn insert(puzzle: Puzzle, mut replace: Vec<String>) {
-        let mut binding: HashSet<_> = puzzle.word_search.into_iter()
-            .map(&|words| words)
-            .collect();
+    fn insert(puzzle: Puzzle, vec: Vec<String>) {
+        let mut binding: HashSet<_> = puzzle.word_search.into_iter().collect();
 
-        replace.sort();
-
-        for word in replace {
-            binding.insert(word);
+        for word in vec.iter() {
+            binding.insert(word.to_string());
         }
 
         Puzzle::print::<String>(binding);
