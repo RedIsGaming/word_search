@@ -10,21 +10,38 @@ impl Arg {
 
         match arg {
             "-g" | "--game" => Arg::print(arg),
-            "-p" | "--prank" => Arg::print(arg),
-            "-e" | "--exit" => Arg::quit(arg),
-            "-h" | "--help" => Arg::print(arg),
-            "-v" | "--version" => Arg::print(arg),
-            _ => Arg::print(arg),
+            "-p" | "--prank" => Arg::prank(),
+            "-e" | "--exit" => Arg::exit(),
+            "-h" | "--help" => Arg::help(args),
+            "-V" | "--Version" => Arg::version(),
+            _ => Arg::unknown(args),
         }
-    }
-
-    fn quit(arg: &str) {
-        println!("Bye!!{:?}", arg);
-        process::exit(0)
     }
 
     fn print(arg: &str) {
         println!("Test{:?}", arg);
+    }
+
+    fn prank() {
+        webbrowser::open("https://www.youtube.com/watch?v=cvh0nX08nRw").ok();
+    }
+
+    fn exit() {
+        process::exit(0);
+    }
+
+    fn help(args: &Args) {
+        Args::clear();
+        Args::print(args);
+    }
+
+    fn version() {
+        println!("version = {}", env!("CARGO_PKG_VERSION"));
+    }
+
+    fn unknown(args: &Args) {
+        Arg::help(args);
+        eprintln!("The command you've entered doesn't exist. Do you need help?");
     }
 }
 
@@ -37,7 +54,7 @@ struct Args {
 impl Args {
     fn new(args: &[String]) -> Result<Self, String> {
         if args.len().eq(&1) || args.len() >= 3 {
-            return Err(String::from("No arguments or more then 2 passed!"));
+            return Err(String::from("No arguments or more then 1 passed!"));
         }
 
         Ok(Self {
@@ -47,8 +64,8 @@ impl Args {
     }
 
     fn print(&self) {
-        println!("{} {} [OPTIONS] {} <GAME>\n\n{}{} <GAME>\n{} <PRANK>  A video prank\n{}           Exit this menu\n{}           Print help\n{}        Print version\n{}",
-            "Reddy word_search Usage:".bold().underline(), self.first.as_ref().unwrap().replace(r"target\debug\", "").bold(), "--game".bold(),
+        println!("{} {} [OPTIONS] {} <GAME> {} <PRANK>\n\n{}{} <GAME>\n{} <PRANK>  Open video prank\n{}           Exit this menu\n{}           Print help\n{}        Print version\n\n{}",
+            "Reddy word_search Usage:".bold().underline(), self.first.as_ref().unwrap().replace(r"target\debug\", "").bold(), "--game".bold(), "--prank".bold(),
     
             "Options:\n".bold().underline(),
             "-g, --game".bold(),    
@@ -58,8 +75,6 @@ impl Args {
             "-V, --version".bold(),
             self.other
         );
-
-        Arg::option(self)
     }
 
     fn clear() -> Option<ExitStatus> {
@@ -69,9 +84,11 @@ impl Args {
 
 fn main() -> Result<(), Box<dyn error::Error>> {
     Args::clear();
+    
     let args: Vec<_> = env::args().collect();
     let env_args = Args::new(&args);
-    Args::print(&env_args.unwrap());
+    Args::print(env_args.as_ref().expect("Couldn't parse/find arguments"));
+    Arg::option(&env_args.unwrap());
 
     Ok(())
 }
