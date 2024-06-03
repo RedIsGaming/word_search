@@ -1,5 +1,7 @@
-use std::{env, error, process::{self, Command, ExitStatus}};
+use std::{env, error, process};
 use colored::Colorize;
+
+use word_game::field::Field;
 
 #[derive(Debug)]
 struct Arg;
@@ -9,17 +11,13 @@ impl Arg {
         let arg = args.other.as_str();
 
         match arg {
-            "-g" | "--game" => Arg::print(arg),
+            "-g" | "--game" => Field::generate(),
             "-p" | "--prank" => Arg::prank(),
             "-e" | "--exit" => Arg::exit(),
             "-h" | "--help" => Arg::help(args),
             "-V" | "--Version" => Arg::version(),
             _ => Arg::unknown(args),
         }
-    }
-
-    fn print(arg: &str) {
-        println!("Test{:?}", arg);
     }
 
     fn prank() {
@@ -31,7 +29,7 @@ impl Arg {
     }
 
     fn help(args: &Args) {
-        Args::clear();
+        Field::clear();
         Args::print(args);
     }
 
@@ -54,7 +52,7 @@ struct Args {
 impl Args {
     fn new(args: &[String]) -> Result<Self, String> {
         if args.len().eq(&1) || args.len() >= 3 {
-            return Err(String::from("No arguments or more then 1 passed!"));
+            return Err(String::from("No arguments or more then 1 where passed!"));
         }
 
         Ok(Self {
@@ -64,7 +62,7 @@ impl Args {
     }
 
     fn print(&self) {
-        println!("{} {} [OPTIONS] {} <GAME> {} <PRANK>\n\n{}{} <GAME>\n{} <PRANK>  Open video prank\n{}           Exit this menu\n{}           Print help\n{}        Print version\n\n{}",
+        println!("{} {} [OPTIONS] {} <GAME> {} <PRANK>\n\n{}{} <GAME>    Play Reddy word_search\n{} <PRANK>  Open video prank\n{}           Exit this menu\n{}           Print help\n{}        Print version\n\n{}",
             "Reddy word_search Usage:".bold().underline(), self.first.as_ref().unwrap().replace(r"target\debug\", "").bold(), "--game".bold(), "--prank".bold(),
     
             "Options:\n".bold().underline(),
@@ -72,22 +70,19 @@ impl Args {
             "-p, --prank".bold(),
             "-e, --exit".bold(),
             "-h, --help".bold(),
-            "-V, --version".bold(),
+            "-V, --Version".bold(),
             self.other
         );
-    }
-
-    fn clear() -> Option<ExitStatus> {
-        Command::new("cmd").args(["/c", "cls"]).status().ok()
     }
 }
 
 fn main() -> Result<(), Box<dyn error::Error>> {
-    Args::clear();
+    Field::clear();
     
     let args: Vec<_> = env::args().collect();
     let env_args = Args::new(&args);
-    Args::print(env_args.as_ref().expect("Couldn't parse/find arguments"));
+    
+    Args::print(env_args.as_ref().expect("Couldn't parse or find arguments"));
     Arg::option(&env_args.unwrap());
 
     Ok(())

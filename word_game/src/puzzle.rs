@@ -83,4 +83,21 @@ impl PuzzleFile {
         bufreader.read_to_string(&mut words).ok();
         Puzzle::create(words);
     }
+
+    #[allow(dead_code)]
+    fn unused() {
+        // let size = Parse::convert::<u8>(arg).unwrap_or_default();
+
+        // let arc: Arc<Vec<Vec<&str>>> = Arc::new(vec![
+        //     vec![
+        //         "str"; 
+        //         (size * 6).into()
+        //     ]; 
+        //     (size * 6).into()
+        // ]);
+
+        // arc.iter().for_each(|vec| {
+        //     println!("{:?}", vec);
+        // });
+    }
 }
