@@ -1,8 +1,7 @@
 use std::io::{stdin, stdout, Write};
-use std::process::{Command, ExitStatus};
 
-use crate::puzzle::PuzzleFile;
-use crate::parse::Parse;
+use colored::Colorize;
+use crate::{puzzle::PuzzleFile, parse::Parse, reset::Reset};
 
 const START: u16 = 5;
 const END: u16 = 20;
@@ -17,44 +16,34 @@ impl FieldRange for u16 {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Field;
 
 impl Field {
-    pub fn clear() -> Option<ExitStatus> {
-        Command::new("cmd")
-            .args(["/c", "cls"])
-            .status()
-            .ok()
-    }
-
     pub fn generate() {
-        Field::clear();
+        Reset::clear();
         let mut input = String::new();
 
-        println!(
-            "Choose a appropriate field size between 5-20 for Reddy word_search:\nDefault is 5 if this condition is not set properly"
+        println!("{}\n{}", 
+            "Choose a appropriate field size between 5-20 for Reddy word_search:".bold().underline(), 
+            "Default is 5 if this condition is not set properly.".red()
         );
 
         stdin().read_line(&mut input).ok();
         stdout().lock().flush().ok();
-        Field::clear();
+        Reset::clear();
         
         let output = Parse::convert::<u16>(&input).unwrap_or_default();
         let size = Field::insert::<u16>(output);
         PuzzleFile::read(size)
     }
     
-    fn insert<T>(output: T) -> T
-        where T: TryFrom<T> + FieldRange + Default,
-    {
+    fn insert<T: FieldRange + Default>(output: T) -> T {
         if !output.fieldrange(START, END) {
             PuzzleFile::read(START);
             T::default()
         }
         
-        else {
-            output
-        }
+        else { output }
     }
 }

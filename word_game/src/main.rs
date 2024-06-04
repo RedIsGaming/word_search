@@ -1,7 +1,7 @@
 use std::{env, error, process};
-use colored::Colorize;
 
-use word_game::field::Field;
+use colored::Colorize;
+use word_game::{field::Field, reset::Reset};
 
 #[derive(Debug)]
 struct Arg;
@@ -12,38 +12,24 @@ impl Arg {
 
         match arg {
             "-g" | "--game" => Field::generate(),
-            "-p" | "--prank" => Arg::prank(),
-            "-e" | "--exit" => Arg::exit(),
+            "-p" | "--prank" => webbrowser::open("https://www.youtube.com/watch?v=cvh0nX08nRw").ok().unwrap(),
+            "-e" | "--exit" => process::exit(0),
             "-h" | "--help" => Arg::help(args),
-            "-V" | "--Version" => Arg::version(),
-            _ => Arg::unknown(args),
+            "-V" | "--Version" => println!("version = {}", env!("CARGO_PKG_VERSION")),
+            _ => {
+                Arg::help(args);
+                eprintln!("The command you've entered doesn't exist. Do you need help?");
+            },
         }
     }
 
-    fn prank() {
-        webbrowser::open("https://www.youtube.com/watch?v=cvh0nX08nRw").ok();
-    }
-
-    fn exit() {
-        process::exit(0);
-    }
-
     fn help(args: &Args) {
-        Field::clear();
+        Reset::clear();
         Args::print(args);
-    }
-
-    fn version() {
-        println!("version = {}", env!("CARGO_PKG_VERSION"));
-    }
-
-    fn unknown(args: &Args) {
-        Arg::help(args);
-        eprintln!("The command you've entered doesn't exist. Do you need help?");
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Args {
     first: Option<String>,
     other: String,
@@ -62,8 +48,10 @@ impl Args {
     }
 
     fn print(&self) {
-        println!("{} {} [OPTIONS] {} <GAME> {} <PRANK>\n\n{}{} <GAME>    Play Reddy word_search\n{} <PRANK>  Open video prank\n{}           Exit this menu\n{}           Print help\n{}        Print version\n\n{}",
-            "Reddy word_search Usage:".bold().underline(), self.first.as_ref().unwrap().replace(r"target\debug\", "").bold(), "--game".bold(), "--prank".bold(),
+        println!("{} {} [OPTIONS] {} <GAME> {} <PRANK>\n\n{}{} <GAME>    Play Reddy word_search\n{} <PRANK>  Open video prank\n{}           Exit this menu\n{}           Print help\n{}        Print version\n",
+            "Reddy word_search Usage:".bold().underline(), self.first.as_ref().unwrap().replace(r"target\debug\", "").bold(), 
+            "--game".bold(), 
+            "--prank".bold(),
     
             "Options:\n".bold().underline(),
             "-g, --game".bold(),    
@@ -71,13 +59,12 @@ impl Args {
             "-e, --exit".bold(),
             "-h, --help".bold(),
             "-V, --Version".bold(),
-            self.other
         );
     }
 }
 
 fn main() -> Result<(), Box<dyn error::Error>> {
-    Field::clear();
+    Reset::clear();
     
     let args: Vec<_> = env::args().collect();
     let env_args = Args::new(&args);

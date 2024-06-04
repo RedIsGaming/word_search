@@ -5,11 +5,8 @@ pub struct Parse;
 
 impl Parse {
     pub fn convert<T>(s: &str) -> Result<T, ParseIntError> 
-        where T: FromStr<Err = ParseIntError>, 
+        where T: FromStr<Err = ParseIntError>,
     {
-        match s.trim().parse::<T>() {
-            Ok(num) => Ok(num),
-            Err(err) => Err(err),
-        }
+        s.trim().parse::<T>()
     }
 }

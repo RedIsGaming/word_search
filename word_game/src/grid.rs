@@ -1,25 +1,28 @@
 use std::{sync::Arc, fmt};
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Grid;
 
 impl Grid {
-    pub fn print<T>(word: &T) 
-        where T: fmt::Debug,
-    {
-        let vec_2d: Vec<Vec<&T>> = vec![vec![word]];
-    
-        vec_2d.iter().for_each(|x| {
-            println!("{:?}", x);
-        });
-
-        Grid::board(vec_2d);
+    pub fn new() -> Self {
+        Self { }
     }
 
-    fn board<T>(vec_2d: Vec<Vec<&T>>) 
-        where T: fmt::Debug,
-    {
-        let bytes: Arc<Vec<Vec<&T>>> = Arc::new(vec_2d);
-        println!("Board letters {:?}", bytes);
+    pub fn print<T: fmt::Debug>(word: &T) -> Grid {
+        let words = [word];
+    
+        words.iter().for_each(|x| {
+            println!("Words: {:?}", x);
+        });
+        
+        Grid::board::<&T>(words)
+    }
+
+    fn board<T: fmt::Debug>(words: [T; 1]) -> Grid {
+        let vec_2d = vec![words];
+        let bytes = Arc::new(vec_2d);
+        println!("Bytes: {:?}", bytes);
+        
+        Grid::new()
     }
 }

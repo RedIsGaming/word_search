@@ -39,7 +39,7 @@ impl Puzzle {
         }
     }
 
-    fn create(word: String, size: u16) {
+    fn create(word: String, size: u16) -> Puzzle {
         let puzzle = Puzzle::new(size, size);
         let vec = Puzzle::iter(word, size);
         Puzzle::insert(puzzle, vec)
@@ -64,24 +64,22 @@ impl Puzzle {
             .collect()
     }
 
-    fn insert(puzzle: Puzzle, vec: Vec<String>) {
+    fn insert(puzzle: Puzzle, vec: Vec<String>) -> Puzzle {
         let mut binding: HashSet<_> = puzzle.word_search.into_iter().collect();
 
         for word in vec.iter() {
             binding.insert(word.to_string());
         }
 
-        Puzzle::spawn::<String>(binding);
+        Puzzle::spawn::<String>(binding)
     }
 
-    fn spawn<T>(binding: HashSet<T>) 
-        where T: fmt::Debug + hash::Hash + Eq,
-    {
-        println!("The words to be searched:");
-        
+    fn spawn<T: fmt::Debug>(binding: HashSet<T>) -> Puzzle {
         for word in &binding {
             Grid::print(word);
         }
+
+        Puzzle::new(Default::default(), Default::default())
     }
 }
 
