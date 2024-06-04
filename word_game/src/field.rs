@@ -38,6 +38,7 @@ impl Field {
 
         stdin().read_line(&mut input).ok();
         stdout().lock().flush().ok();
+        Field::clear();
         
         let output = Parse::convert::<u16>(&input).unwrap_or_default();
         let size = Field::insert::<u16>(output);
@@ -45,13 +46,15 @@ impl Field {
     }
     
     fn insert<T>(output: T) -> T
-        where 
-            T: TryFrom<T> + FieldRange,
+        where T: TryFrom<T> + FieldRange + Default,
     {
         if !output.fieldrange(START, END) {
             PuzzleFile::read(START);
+            T::default()
         }
-
-        output
+        
+        else {
+            output
+        }
     }
 }

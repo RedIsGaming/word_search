@@ -4,6 +4,7 @@ use std::{fs::File, fmt};
 use std::io::{self, BufReader, Read};
 
 use rand::{thread_rng, seq::SliceRandom};
+use crate::grid::Grid;
 
 #[derive(Debug, Default)]
 struct Puzzle {
@@ -38,16 +39,21 @@ impl Puzzle {
         }
     }
 
-    fn create(words: String, size: u16) {
+    fn create(word: String, size: u16) {
         let puzzle = Puzzle::new(size, size);
-        let vec = Puzzle::iter(words, size);
+        let vec = Puzzle::iter(word, size);
         Puzzle::insert(puzzle, vec)
     }
 
-    fn iter(words: String, size: u16) -> Vec<String> {
+    fn iter(word: String, size: u16) -> Vec<String> {
         let mut sum: usize = Default::default();
+        let mut words: Vec<_> = word.split_whitespace()
+            .map(|x| x.to_string())
+            .collect();
 
-        words.lines()
+        words.shuffle(&mut thread_rng());
+
+        words.into_iter()
             .map(|x| x.to_string())
             .filter(|x| x.contains('-').not() && x.contains("()").not() && x.contains('\'').not())
             .filter(|x| x.len().le(&size.into()))
@@ -58,20 +64,23 @@ impl Puzzle {
             .collect()
     }
 
-    fn insert(puzzle: Puzzle, mut vec: Vec<String>) {
+    fn insert(puzzle: Puzzle, vec: Vec<String>) {
         let mut binding: HashSet<_> = puzzle.word_search.into_iter().collect();
-        vec.shuffle(&mut thread_rng());
 
         for word in vec.iter() {
             binding.insert(word.to_string());
         }
 
-        Puzzle::print::<String>(binding);
+        Puzzle::spawn::<String>(binding);
     }
 
-    fn print<T: fmt::Debug>(binding: HashSet<T>) {
+    fn spawn<T>(binding: HashSet<T>) 
+        where T: fmt::Debug + hash::Hash + Eq,
+    {
+        println!("The words to be searched:");
+        
         for word in &binding {
-            println!("{:?}", word);
+            Grid::print(word);
         }
     }
 }
@@ -90,9 +99,9 @@ impl PuzzleFile {
     pub fn read(size: u16) {
         let file = PuzzleFile::unlock().expect("Couldn't open the words file");
         let mut bufreader = BufReader::new(file);
-        let mut words = String::new();
+        let mut word = String::new();
 
-        bufreader.read_to_string(&mut words).ok();
-        Puzzle::create(words, size);
+        bufreader.read_to_string(&mut word).ok();
+        Puzzle::create(word, size);
     }
 }
