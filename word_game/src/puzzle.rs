@@ -3,6 +3,8 @@ use std::{collections::HashSet, hash::Hash, hash};
 use std::{fs::File, fmt};
 use std::io::{self, BufReader, Read};
 
+use rand::{thread_rng, seq::SliceRandom};
+
 #[derive(Debug, Default)]
 struct Puzzle {
     width: u16,
@@ -43,21 +45,22 @@ impl Puzzle {
     }
 
     fn iter(words: String, size: u16) -> Vec<String> {
-        let mut sum: u16 = Default::default();
+        let mut sum: usize = Default::default();
 
         words.lines()
             .map(|x| x.to_string())
             .filter(|x| x.contains('-').not() && x.contains("()").not() && x.contains('\'').not())
-            .filter(|x| x.len() <= size.into())
+            .filter(|x| x.len().le(&size.into()))
             .take_while(|x| {
-                sum.add_assign(size);
-                x.as_bytes().len().le(&sum.into())
+                sum.add_assign(x.as_bytes().len());
+                sum.le(&size.pow(2).into())
             })
             .collect()
     }
 
-    fn insert(puzzle: Puzzle, vec: Vec<String>) {
+    fn insert(puzzle: Puzzle, mut vec: Vec<String>) {
         let mut binding: HashSet<_> = puzzle.word_search.into_iter().collect();
+        vec.shuffle(&mut thread_rng());
 
         for word in vec.iter() {
             binding.insert(word.to_string());
