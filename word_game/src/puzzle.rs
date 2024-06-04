@@ -1,10 +1,12 @@
+use std::ops::{AddAssign, Not};
 use std::{collections::HashSet, hash::Hash, hash};
-use std::{fs::File, io::{self, BufReader, Read}, fmt};
+use std::{fs::File, fmt};
+use std::io::{self, BufReader, Read};
 
 #[derive(Debug, Default)]
-pub struct Puzzle {
-    width: u8,
-    height: u8,
+struct Puzzle {
+    width: u16,
+    height: u16,
     word_search: HashSet<String>,
 }
 
@@ -26,7 +28,7 @@ impl Hash for Puzzle {
 }
 
 impl Puzzle {
-    fn new(width: u8, height: u8) -> Self {
+    fn new(width: u16, height: u16) -> Self {
         Self { 
             width, 
             height, 
@@ -34,16 +36,23 @@ impl Puzzle {
         }
     }
 
-    fn create(words: String) {
-        let puzzle = Puzzle::new(5, 5);
-        let vec = Puzzle::iter(words);
+    fn create(words: String, size: u16) {
+        let puzzle = Puzzle::new(size, size);
+        let vec = Puzzle::iter(words, size);
         Puzzle::insert(puzzle, vec)
     }
 
-    fn iter(words: String) -> Vec<String> {
+    fn iter(words: String, size: u16) -> Vec<String> {
+        let mut sum: u16 = Default::default();
+
         words.lines()
-            .map(|line| line.to_string())
-            .filter(|word| !word.contains('-') && !word.contains("()"))
+            .map(|x| x.to_string())
+            .filter(|x| x.contains('-').not() && x.contains("()").not() && x.contains('\'').not())
+            .filter(|x| x.len() <= size.into())
+            .take_while(|x| {
+                sum.add_assign(size);
+                x.as_bytes().len().le(&sum.into())
+            })
             .collect()
     }
 
@@ -75,29 +84,12 @@ impl PuzzleFile {
         }
     }
 
-    pub fn read() {
+    pub fn read(size: u16) {
         let file = PuzzleFile::unlock().expect("Couldn't open the words file");
         let mut bufreader = BufReader::new(file);
         let mut words = String::new();
 
         bufreader.read_to_string(&mut words).ok();
-        Puzzle::create(words);
-    }
-
-    #[allow(dead_code)]
-    fn unused() {
-        // let size = Parse::convert::<u8>(arg).unwrap_or_default();
-
-        // let arc: Arc<Vec<Vec<&str>>> = Arc::new(vec![
-        //     vec![
-        //         "str"; 
-        //         (size * 6).into()
-        //     ]; 
-        //     (size * 6).into()
-        // ]);
-
-        // arc.iter().for_each(|vec| {
-        //     println!("{:?}", vec);
-        // });
+        Puzzle::create(words, size);
     }
 }

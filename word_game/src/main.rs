@@ -51,7 +51,7 @@ struct Args {
 
 impl Args {
     fn new(args: &[String]) -> Result<Self, String> {
-        if args.len().eq(&1) || args.len() >= 3 {
+        if args.len().eq(&1) || args.len().ge(&3) {
             return Err(String::from("No arguments or more then 1 where passed!"));
         }
 
