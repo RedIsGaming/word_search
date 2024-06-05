@@ -7,9 +7,9 @@ use rand::{thread_rng, seq::SliceRandom};
 use crate::grid::Grid;
 
 #[derive(Debug, Default)]
-struct Puzzle {
-    width: u16,
-    height: u16,
+pub struct Puzzle {
+    pub width: u16,
+    pub height: u16,
     word_search: HashSet<String>,
 }
 
@@ -65,18 +65,22 @@ impl Puzzle {
     }
 
     fn insert(puzzle: Puzzle, vec: Vec<String>) -> Puzzle {
-        let mut binding: HashSet<_> = puzzle.word_search.into_iter().collect();
+        let mut binding: HashSet<_> = puzzle.word_search.iter().cloned().collect();
 
         for word in vec.iter() {
             binding.insert(word.to_string());
         }
 
-        Puzzle::spawn::<String>(binding)
+        Puzzle::spawn::<String>(binding, puzzle)
     }
 
-    fn spawn<T: fmt::Debug>(binding: HashSet<T>) -> Puzzle {
+    fn spawn<T>(binding: HashSet<T>, puzzle: Puzzle) -> Puzzle 
+        where 
+            T: fmt::Debug,
+            String: for<'a> From<&'a T>
+    {
         for word in &binding {
-            Grid::print(word);
+            Grid::board(word, &puzzle);
         }
 
         Puzzle::new(Default::default(), Default::default())
