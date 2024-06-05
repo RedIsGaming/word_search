@@ -31,7 +31,9 @@ impl Field {
 
         stdin().read_line(&mut input).ok();
         stdout().lock().flush().ok();
+        
         Reset::clear();
+        println!("{}", "Reddy word_search puzzle grid is:".bold().underline());
         
         let output = Parse::convert::<u16>(&input).unwrap_or_default();
         let size = Field::insert::<u16>(output);

@@ -55,8 +55,9 @@ impl Puzzle {
 
         words.into_iter()
             .map(|x| x.to_string())
-            .filter(|x| x.contains('-').not() && x.contains("()").not() && x.contains('\'').not())
-            .filter(|x| x.len().le(&size.into()))
+            .filter(|x| x.contains('-').not() && x.contains('(').not() && x.contains(')').not())
+            .filter(|x| x.contains('\'').not() && x.contains('/').not() && x.contains('.').not())
+            .filter(|x| x.len().eq(&size.into()))
             .take_while(|x| {
                 sum.add_assign(x.as_bytes().len());
                 sum.le(&size.pow(2).into())
@@ -75,9 +76,9 @@ impl Puzzle {
     }
 
     fn spawn<T>(binding: HashSet<T>, puzzle: Puzzle) -> Puzzle 
-        where 
-            T: fmt::Debug,
-            String: for<'a> From<&'a T>
+    where 
+        T: fmt::Debug,
+        String: for<'a> From<&'a T>
     {
         for word in &binding {
             Grid::board(word, &puzzle);
