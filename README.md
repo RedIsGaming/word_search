@@ -56,7 +56,7 @@ Then switch to that directory.
 cd word_search
 ```
 
-Then to word_game.
+Then to word_game. (This step is optional now since there are workspaces available)
 ```shell
 cd word_game
 ```

@@ -1,10 +1,10 @@
-use std::ops::{AddAssign, Not};
-use std::{collections::HashSet, hash::Hash, hash};
-use std::{fs::File, fmt};
 use std::io::{self, BufReader, Read};
+use std::ops::{AddAssign, Not};
+use std::{collections::HashSet, hash, hash::Hash};
+use std::{fmt, fs::File};
 
-use rand::{thread_rng, seq::SliceRandom};
 use crate::grid::Grid;
+use rand::{seq::SliceRandom, thread_rng};
 
 #[derive(Debug, Default)]
 pub struct Puzzle {
@@ -19,7 +19,7 @@ impl Hash for Puzzle {
         self.height.hash(state);
         self.word_search.hasher();
     }
-    
+
     fn hash_slice<H: hash::Hasher>(data: &[Self], state: &mut H)
     where
         Self: Sized,
@@ -32,10 +32,10 @@ impl Hash for Puzzle {
 
 impl Puzzle {
     fn new(width: u16, height: u16) -> Self {
-        Self { 
-            width, 
-            height, 
-            word_search: HashSet::new(), 
+        Self {
+            width,
+            height,
+            word_search: HashSet::new(),
         }
     }
 
@@ -47,13 +47,12 @@ impl Puzzle {
 
     fn iter(word: String, size: u16) -> Vec<String> {
         let mut sum: usize = Default::default();
-        let mut words: Vec<_> = word.split_whitespace()
-            .map(|x| x.to_string())
-            .collect();
+        let mut words: Vec<_> = word.split_whitespace().map(|x| x.to_string()).collect();
 
         words.shuffle(&mut thread_rng());
 
-        words.into_iter()
+        words
+            .into_iter()
             .map(|x| x.to_string())
             .filter(|x| x.contains('-').not() && x.contains('(').not() && x.contains(')').not())
             .filter(|x| x.contains('\'').not() && x.contains('/').not() && x.contains('.').not())
@@ -75,10 +74,10 @@ impl Puzzle {
         Puzzle::spawn::<String>(binding, puzzle)
     }
 
-    fn spawn<T>(binding: HashSet<T>, puzzle: Puzzle) -> Puzzle 
-    where 
+    fn spawn<T>(binding: HashSet<T>, puzzle: Puzzle) -> Puzzle
+    where
         T: fmt::Debug,
-        String: for<'a> From<&'a T>
+        String: for<'a> From<&'a T>,
     {
         for word in &binding {
             Grid::board(word, &puzzle);
@@ -93,7 +92,7 @@ pub struct PuzzleFile;
 
 impl PuzzleFile {
     fn unlock() -> Result<File, io::Error> {
-        match File::open("../public/word_search.txt") {
+        match File::open("public/word_search.txt") {
             Ok(file) => Ok(file),
             Err(err) => Err(err),
         }

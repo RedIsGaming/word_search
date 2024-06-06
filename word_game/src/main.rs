@@ -16,12 +16,12 @@ impl Arg {
             "-h" | "--help" => {
                 Reset::clear();
                 Args::print(args);
-            },
+            }
             "-v" | "--version" => println!("version = {}", env!("CARGO_PKG_VERSION")),
             _ => {
                 Reset::clear();
                 eprintln!("{}", "The command you've entered doesn't exist. Do you need help?\nTry cargo run -- -h instead.".bold());
-            },
+            }
         }
     }
 }
@@ -49,7 +49,6 @@ impl Args {
             "Reddy word_search Usage:".bold().underline(), self.first.as_ref().unwrap().replace(r"target\debug\", "").bold(), 
             "--game".bold(), 
             "--prank".bold(),
-    
             "Options:\n".bold().underline(),
             "-g, --game".bold(),    
             "-p, --prank".bold(),
@@ -61,10 +60,10 @@ impl Args {
 
 fn main() -> Result<(), Box<dyn error::Error>> {
     Reset::clear();
-    
+
     let args: Vec<_> = env::args().collect();
     let env_args = Args::new(&args);
-    
+
     Args::print(env_args.as_ref().expect("Couldn't parse or find arguments"));
     Arg::option(&env_args.unwrap());
 

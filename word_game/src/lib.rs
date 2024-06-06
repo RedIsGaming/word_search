@@ -1,5 +1,5 @@
-pub mod parse;
 pub mod field;
-pub mod puzzle;
 pub mod grid;
+pub mod parse;
+pub mod puzzle;
 pub mod reset;

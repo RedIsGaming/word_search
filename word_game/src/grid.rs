@@ -1,4 +1,8 @@
-use std::{cmp::Ordering, fmt, ops::{Add, Index, IndexMut, Mul}};
+use std::{
+    cmp::Ordering,
+    fmt,
+    ops::{Add, Index, IndexMut, Mul},
+};
 
 use crate::puzzle::Puzzle;
 
@@ -6,21 +10,24 @@ use crate::puzzle::Puzzle;
 pub struct Grid;
 
 impl Grid {
-    pub fn board<T>(word: &T, puzzle: &Puzzle) 
-    where 
+    pub fn board<T>(word: &T, puzzle: &Puzzle)
+    where
         T: fmt::Debug,
         String: for<'a> From<&'a T>,
     {
         let words = String::from(word);
-        let bytes = words.chars()
+        let bytes = words
+            .chars()
             .map(|x| x.to_string())
             .collect::<Vec<String>>()
             .join(" ");
-        
+
         let mut vec_2d: Grid2d<String> = Grid2d::new(puzzle.width, puzzle.height);
         vec_2d.grid.push(bytes);
-        vec_2d.grid.sort_by(|a, b| b.cmp(a).partial_cmp(&Ordering::Equal).unwrap());
-        
+        vec_2d
+            .grid
+            .sort_by(|a, b| b.cmp(a).partial_cmp(&Ordering::Equal).unwrap());
+
         for byte in vec_2d.grid {
             println!("{}", byte) //join can be used to prevent std::fmt::Display from popping up.
         }
@@ -37,9 +44,9 @@ struct Grid2d<T> {
 impl<T> Grid2d<T> {
     fn new(x: u16, y: u16) -> Self {
         Self {
-           grid: Vec::with_capacity(x.into()),
-           x,
-           y,
+            grid: Vec::with_capacity(x.into()),
+            x,
+            y,
         }
     }
 

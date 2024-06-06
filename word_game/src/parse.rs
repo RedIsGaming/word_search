@@ -4,8 +4,9 @@ use std::{num::ParseIntError, str::FromStr};
 pub struct Parse;
 
 impl Parse {
-    pub fn convert<T>(s: &str) -> Result<T, ParseIntError> 
-        where T: FromStr<Err = ParseIntError>,
+    pub fn convert<T>(s: &str) -> Result<T, ParseIntError>
+    where
+        T: FromStr<Err = ParseIntError>,
     {
         s.trim().parse::<T>()
     }
