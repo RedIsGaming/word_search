@@ -1,4 +1,4 @@
-use std::{env, error, process};
+use std::{env, error};
 
 use colored::Colorize;
 use word_game::{field::Field, reset::Reset};
@@ -13,19 +13,16 @@ impl Arg {
         match arg {
             "-g" | "--game" => Field::generate(),
             "-p" | "--prank" => webbrowser::open("https://www.youtube.com/watch?v=cvh0nX08nRw").ok().unwrap(),
-            "-e" | "--exit" => process::exit(0),
-            "-h" | "--help" => Arg::help(args),
-            "-V" | "--Version" => println!("version = {}", env!("CARGO_PKG_VERSION")),
+            "-h" | "--help" => {
+                Reset::clear();
+                Args::print(args);
+            },
+            "-v" | "--version" => println!("version = {}", env!("CARGO_PKG_VERSION")),
             _ => {
-                Arg::help(args);
-                eprintln!("The command you've entered doesn't exist. Do you need help?");
+                Reset::clear();
+                eprintln!("{}", "The command you've entered doesn't exist. Do you need help?\nTry cargo run -- -h instead.".bold());
             },
         }
-    }
-
-    fn help(args: &Args) {
-        Reset::clear();
-        Args::print(args);
     }
 }
 
@@ -48,7 +45,7 @@ impl Args {
     }
 
     fn print(&self) {
-        println!("{} {} [OPTIONS] {} <GAME> {} <PRANK>\n\n{}{} <GAME>    Play Reddy word_search\n{} <PRANK>  Open video prank\n{}           Exit this menu\n{}           Print help\n{}        Print version\n",
+        println!("{} {} [OPTIONS] {} <GAME> {} <PRANK>\n\n{}{} <GAME>    Play Reddy word_search\n{} <PRANK>  Open video prank\n{}           Print help\n{}        Print version\n",
             "Reddy word_search Usage:".bold().underline(), self.first.as_ref().unwrap().replace(r"target\debug\", "").bold(), 
             "--game".bold(), 
             "--prank".bold(),
@@ -56,9 +53,8 @@ impl Args {
             "Options:\n".bold().underline(),
             "-g, --game".bold(),    
             "-p, --prank".bold(),
-            "-e, --exit".bold(),
             "-h, --help".bold(),
-            "-V, --Version".bold(),
+            "-v, --version".bold(),
         );
     }
 }

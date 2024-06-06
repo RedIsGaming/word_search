@@ -1,4 +1,4 @@
-use std::io::{stdin, stdout, Write};
+use std::{io::{stdin, stdout, Write}, ops::Not};
 
 use colored::Colorize;
 use crate::{puzzle::PuzzleFile, parse::Parse, reset::Reset};
@@ -41,11 +41,11 @@ impl Field {
     }
     
     fn insert<T: FieldRange + Default>(output: T) -> T {
-        if !output.fieldrange(START, END) {
+        if output.fieldrange(START, END).not() {
             PuzzleFile::read(START);
-            T::default()
+            return T::default()
         }
         
-        else { output }
+        output
     }
 }
