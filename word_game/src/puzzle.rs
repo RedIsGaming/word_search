@@ -1,7 +1,7 @@
 use std::io::{self, BufReader, Read};
 use std::ops::{AddAssign, Not};
-use std::{collections::HashSet, hash, hash::Hash};
-use std::{fmt, fs::File};
+use std::collections::HashSet;
+use std::fs::File;
 
 use crate::grid::Grid;
 use rand::{seq::SliceRandom, thread_rng};
@@ -11,23 +11,6 @@ pub struct Puzzle {
     pub width: u16,
     pub height: u16,
     word_search: HashSet<String>,
-}
-
-impl Hash for Puzzle {
-    fn hash<H: hash::Hasher>(&self, state: &mut H) {
-        self.width.hash(state);
-        self.height.hash(state);
-        self.word_search.hasher();
-    }
-
-    fn hash_slice<H: hash::Hasher>(data: &[Self], state: &mut H)
-    where
-        Self: Sized,
-    {
-        for piece in data {
-            piece.hash(state)
-        }
-    }
 }
 
 impl Puzzle {
@@ -56,7 +39,7 @@ impl Puzzle {
             .map(|x| x.to_string())
             .filter(|x| x.contains('-').not() && x.contains('(').not() && x.contains(')').not())
             .filter(|x| x.contains('\'').not() && x.contains('/').not() && x.contains('.').not())
-            .filter(|x| x.len().eq(&size.into()))
+            .filter(|x| x.len().le(&size.into()))
             .take_while(|x| {
                 sum.add_assign(x.as_bytes().len());
                 sum.le(&size.pow(2).into())
@@ -76,14 +59,13 @@ impl Puzzle {
 
     fn spawn<T>(binding: HashSet<T>, puzzle: Puzzle) -> Puzzle
     where
-        T: fmt::Debug,
         String: for<'a> From<&'a T>,
     {
         for word in &binding {
             Grid::board(word, &puzzle);
         }
 
-        Puzzle::new(Default::default(), Default::default())
+        Puzzle::default()
     }
 }
 

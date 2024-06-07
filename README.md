@@ -83,7 +83,7 @@ cargo run -- -h
 - [x] Random words set for grid
 - [ ] Truely getting random sorted bytes
 - [ ] Fully playable word search game
-- [ ] Replace empty bytes with letters
+- [x] Replace empty bytes with letters
 - [ ] Running tests with functions
 - [x] Documentation written and checked
 - [x] Check full code with formatting
