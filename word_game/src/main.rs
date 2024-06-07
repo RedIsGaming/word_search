@@ -1,30 +1,7 @@
 use std::{env, error};
 
 use colored::Colorize;
-use word_game::{field::Field, reset::Reset};
-
-#[derive(Debug)]
-struct Arg;
-
-impl Arg {
-    fn option(args: &Args) {
-        let arg = args.other.as_str();
-
-        match arg {
-            "-g" | "--game" => Field::generate(),
-            "-p" | "--prank" => webbrowser::open("https://www.youtube.com/watch?v=cvh0nX08nRw").ok().unwrap(),
-            "-h" | "--help" => {
-                Reset::clear();
-                Args::print(args);
-            }
-            "-v" | "--version" => println!("version = {}", env!("CARGO_PKG_VERSION")),
-            _ => {
-                Reset::clear();
-                eprintln!("{}", "The command you've entered doesn't exist. Do you need help?\nTry cargo run -- -h instead.".bold());
-            }
-        }
-    }
-}
+use word_game::{field, reset};
 
 #[derive(Debug, Clone)]
 struct Args {
@@ -58,14 +35,32 @@ impl Args {
     }
 }
 
+fn option(args: &Args) {
+    let arg = args.other.as_str();
+
+    match arg {
+        "-g" | "--game" => field::generate(),
+        "-p" | "--prank" => webbrowser::open("https://www.youtube.com/watch?v=cvh0nX08nRw").ok().unwrap(),
+        "-h" | "--help" => {
+            reset::clear();
+            Args::print(args);
+        }
+        "-v" | "--version" => println!("version = {}", env!("CARGO_PKG_VERSION")),
+        _ => {
+            reset::clear();
+            eprintln!("{}", "The command you've entered doesn't exist. Do you need help?\nTry cargo run -- -h instead.".bold());
+        }
+    }
+}
+
 fn main() -> Result<(), Box<dyn error::Error>> {
-    Reset::clear();
+    reset::clear();
 
     let args: Vec<_> = env::args().collect();
     let env_args = Args::new(&args);
 
     Args::print(env_args.as_ref().expect("Couldn't parse or find arguments"));
-    Arg::option(&env_args.unwrap());
+    option(&env_args.unwrap());
 
     Ok(())
 }

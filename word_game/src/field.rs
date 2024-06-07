@@ -3,7 +3,7 @@ use std::{
     ops::Not,
 };
 
-use crate::{parse::Parse, puzzle::PuzzleFile, reset::Reset};
+use crate::{parse, puzzle, reset};
 use colored::Colorize;
 
 const START: u16 = 5;
@@ -19,37 +19,32 @@ impl FieldRange for u16 {
     }
 }
 
-#[derive(Debug, Default)]
-pub struct Field;
+pub fn generate() {
+    reset::clear();
+    let mut input = String::new();
 
-impl Field {
-    pub fn generate() {
-        Reset::clear();
-        let mut input = String::new();
+    println!(
+        "{}\n{}",
+        "Choose a appropriate field size between 5-20 for Reddy word_search:".bold().underline(),
+        "Default is 5 if this condition is not set properly.".red()
+    );
 
-        println!(
-            "{}\n{}",
-            "Choose a appropriate field size between 5-20 for Reddy word_search:".bold().underline(),
-            "Default is 5 if this condition is not set properly.".red()
-        );
+    stdin().read_line(&mut input).ok();
+    stdout().lock().flush().ok();
 
-        stdin().read_line(&mut input).ok();
-        stdout().lock().flush().ok();
+    reset::clear();
+    println!("{}", "Reddy word_search puzzle grid is:".bold().underline());
 
-        Reset::clear();
-        println!("{}", "Reddy word_search puzzle grid is:".bold().underline());
+    let output = parse::convert::<u16>(&input).unwrap_or_default();
+    let size = insert::<u16>(output);
+    puzzle::read(size)
+}
 
-        let output = Parse::convert::<u16>(&input).unwrap_or_default();
-        let size = Field::insert::<u16>(output);
-        PuzzleFile::read(size)
+fn insert<T: FieldRange + Default>(output: T) -> T {
+    if output.fieldrange(START, END).not() {
+        puzzle::read(START);
+        return T::default();
     }
 
-    fn insert<T: FieldRange + Default>(output: T) -> T {
-        if output.fieldrange(START, END).not() {
-            PuzzleFile::read(START);
-            return T::default();
-        }
-
-        output
-    }
+    output
 }

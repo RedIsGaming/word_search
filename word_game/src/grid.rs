@@ -1,11 +1,7 @@
 use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use crate::puzzle::Puzzle;
 
-#[derive(Debug)]
-pub struct Grid;
-
-impl Grid {
-    pub fn board<T>(word: &T, puzzle: &Puzzle)
+pub fn board<T>(word: &T, puzzle: &Puzzle)
     where
         String: for<'a> From<&'a T>,
     {   
@@ -32,4 +28,3 @@ impl Grid {
 
         println!("{}", bytes.join(" ").to_uppercase());
     }
-}
